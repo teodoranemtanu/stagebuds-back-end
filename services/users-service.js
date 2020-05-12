@@ -11,8 +11,13 @@ const getAllUsers = async () => {
 };
 
 const findUserByEmail = async (email) => {
-    let users = await User.findOne({email: email});
-    return users;
+    let user = await User.findOne({email: email});
+    return user;
+};
+
+const findUserById = async (uid) => {
+    let user = await User.findById(uid);
+    return user;
 };
 
 const createUser = async (email, password, firstName, lastName) => {
@@ -41,8 +46,15 @@ const createToken = (user) => {
     );
 };
 
+const updateProfilePicture = async (userId, image) => {
+    let user = await User.findByIdAndUpdate(userId, { profilePicture:  image});
+    return user;
+};
+
 exports.getAllUsers = getAllUsers;
 exports.createUser = createUser;
 exports.createToken = createToken;
 exports.findUserByEmail = findUserByEmail;
 exports.checkPassword = checkPassword;
+exports.findUserById = findUserById;
+exports.updateProfilePicture = updateProfilePicture;
