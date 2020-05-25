@@ -51,6 +51,10 @@ const updateProfilePicture = async (userId, image) => {
     return user;
 };
 
+const isCreator = (creatorId, userId) => {
+    return creatorId === userId;
+};
+
 exports.getAllUsers = getAllUsers;
 exports.createUser = createUser;
 exports.createToken = createToken;
@@ -58,3 +62,4 @@ exports.findUserByEmail = findUserByEmail;
 exports.checkPassword = checkPassword;
 exports.findUserById = findUserById;
 exports.updateProfilePicture = updateProfilePicture;
+exports.isCreator = isCreator;

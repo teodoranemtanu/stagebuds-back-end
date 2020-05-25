@@ -4,6 +4,10 @@ const mongoose = require('mongoose');
 const path = require('path');
 
 const usersRoutes = require('./routes/users-routes');
+const profilesRoutes = require('./routes/profiles-routes');
+const postsRoutes = require('./routes/posts-routes');
+const likesRoutes = require('./routes/likes-routes');
+
 const HttpError = require('./models/http-error');
 const cloudinary = require('./services/cloudinary');
 
@@ -16,14 +20,16 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
     next();
 });
 
 app.use('*', cloudinary.cloudinaryConfig);
 
 app.use('/api/users', usersRoutes);
-// app.use('/api/profiles', profileRoutes);
+app.use('/api/profiles', profilesRoutes);
+app.use('/api/posts', postsRoutes);
+app.use('/api/likes', likesRoutes);
 
 app.use((req, res, next) => {
     throw new HttpError('Could not find this route', 404);

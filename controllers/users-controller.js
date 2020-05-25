@@ -1,7 +1,7 @@
 const {validationResult} = require('express-validator');
 const HttpError = require('../models/http-error')
 const usersService = require('../services/users-service');
-const profileService = require('../services/profile-service');
+const profileService = require('../services/profiles-service');
 const {dataUri} = require("../middleware/multer");
 const cloudinary = require('cloudinary').v2;
 
@@ -102,6 +102,20 @@ const login = async (req, res, next) => {
         })
 };
 
+const getUser = async (req, res, next) => {
+    const uid = req.params.uid;
+    const user = await usersService.findUserById(uid);
+
+    res.status(201)
+        .json({
+            userId: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            profilePicture: user.profilePicture
+        })
+};
+
 const uploadImage = async (req, res, next) => {
     if (!req.file) {
         const error = new HttpError(
@@ -143,3 +157,4 @@ exports.getUsers = getUsers;
 exports.signup = signup;
 exports.login = login;
 exports.uploadImage = uploadImage;
+exports.getUser = getUser;

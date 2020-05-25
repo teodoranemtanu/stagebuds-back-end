@@ -12,6 +12,8 @@ router.post('/signup', usersController.signup);
 
 router.post('/login', usersController.login);
 
+router.get('/:uid', usersController.getUser);
+
 router.post('/uploadImage', authCheck, multerUploads, usersController.uploadImage);
 
 module.exports = router;
