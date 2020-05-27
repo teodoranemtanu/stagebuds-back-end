@@ -10,16 +10,19 @@ const postSchema = new Schema({
             type: String, required: true
         },
         date: {
-            type: Date
+            type: Date, required: true
         },
         location: {
             lat: {
-                type: Number, required: true
+                type: Number
             },
             lng: {
-                type: Number, required: true
+                type: Number
             }
         },
+        address: {
+            type: String, required: true
+        }
     },
     author: {
         type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true

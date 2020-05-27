@@ -16,11 +16,9 @@ const getAllPostLikes = async (req, res, next) => {
 const addLike = async (req, res, next) => {
     const postId = req.params.pid;
     const userId = req.userData.userId;
-    // const timestamp = req.body;
+    const {timestamp} = req.body;
+
     let like;
-    //TO BE RECEIVED FROM FRONT END
-    const DUMMY_DATE = new Date('May 23, 2020 23:15:30 UTC').toJSON();
-    const timestamp = DUMMY_DATE;
 
     try{
         like = await likesService.addLike({post: postId, author: userId, timestamp});

@@ -9,10 +9,13 @@ const HttpError = require("../models/http-error");
 
 const createPost = async (post) => {
     const createdPost = new Post(post);
+
+    console.log(createdPost);
+
     const session = await mongoose.startSession();
     session.startTransaction();
     createdPost.save();
-    const user = await User.findById(post.author);
+    const user = await User.findById(createdPost.author);
     user.posts.push(createdPost.id);
     await user.save({session});
     await session.commitTransaction();
@@ -22,7 +25,6 @@ const createPost = async (post) => {
 
 const getAllPosts = async () => {
     const posts = await Post.find().populate('author',  {password: 0, email: 0});
-    console.log(posts);
     return posts;
 };
 

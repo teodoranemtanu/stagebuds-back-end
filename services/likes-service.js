@@ -1,4 +1,4 @@
-const MODEL_PATH = '../models/' ;
+const MODEL_PATH = '../models/';
 const Like = require(MODEL_PATH + 'like');
 const HttpError = require("../models/http-error");
 

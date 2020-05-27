@@ -1,5 +1,6 @@
 const HttpError = require('../models/http-error');
 const postsService = require('../services/posts-service');
+const locationService = require('../services/location-service');
 
 const getAllPosts = async (req, res, next) => {
     let posts;
@@ -41,12 +42,31 @@ const getAllPostsByUser = async (req, res, next) => {
 
 const createPost = async (req, res, next) => {
     let {concertDetails, text, timestamp} = req.body;
-    const DUMMY_DATE = new Date('May 23, 2020 23:15:30 UTC').toJSON();
-    timestamp = DUMMY_DATE;
     let createdPost;
+    let coordinates;
+    // console.log(concertDetails.location);
+
+    try {
+        coordinates = await locationService.getCoords(concertDetails.location);
+        console.log(coordinates);
+    } catch (error) {
+        return next(error);
+    }
+    // console.log(coordinates);
+
+    const concertDetailsWithCoordinates = {
+        title: concertDetails.title,
+        band: concertDetails.band,
+        date: concertDetails.date,
+        location: coordinates,
+        address: concertDetails.location
+    };
+
+    console.log(concertDetailsWithCoordinates, req.userData.userId, timestamp, text);
+
     try {
         createdPost = await postsService.createPost({
-            concertDetails, author: req.userData.userId, timestamp, text
+            concertDetails: concertDetailsWithCoordinates, author: req.userData.userId, timestamp, text
         });
     } catch (err) {
         const error = new HttpError(err.message, err.errorCode);
