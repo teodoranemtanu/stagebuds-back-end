@@ -12,7 +12,7 @@ const postSchema = new Schema({
         date: {
             type: Date, required: true
         },
-        location: {
+        coordinates: {
             lat: {
                 type: Number
             },
@@ -20,7 +20,7 @@ const postSchema = new Schema({
                 type: Number
             }
         },
-        address: {
+        location: {
             type: String, required: true
         }
     },
@@ -30,7 +30,7 @@ const postSchema = new Schema({
     timestamp: {
         type: Date, required: true
     },
-    text: {
+    description: {
         type: String, required: true
     },
     likes: [{

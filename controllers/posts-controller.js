@@ -41,10 +41,9 @@ const getAllPostsByUser = async (req, res, next) => {
 };
 
 const createPost = async (req, res, next) => {
-    let {concertDetails, text, timestamp} = req.body;
+    let {concertDetails, description, timestamp} = req.body;
     let createdPost;
     let coordinates;
-    // console.log(concertDetails.location);
 
     try {
         coordinates = await locationService.getCoords(concertDetails.location);
@@ -52,21 +51,20 @@ const createPost = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
-    // console.log(coordinates);
 
     const concertDetailsWithCoordinates = {
         title: concertDetails.title,
         band: concertDetails.band,
         date: concertDetails.date,
-        location: coordinates,
-        address: concertDetails.location
+        location: concertDetails.location,
+        coordinates: coordinates
     };
 
-    console.log(concertDetailsWithCoordinates, req.userData.userId, timestamp, text);
+    console.log(concertDetailsWithCoordinates, req.userData.userId, timestamp, description);
 
     try {
         createdPost = await postsService.createPost({
-            concertDetails: concertDetailsWithCoordinates, author: req.userData.userId, timestamp, text
+            concertDetails: concertDetailsWithCoordinates, author: req.userData.userId, timestamp, description: description
         });
     } catch (err) {
         const error = new HttpError(err.message, err.errorCode);
@@ -81,11 +79,11 @@ const createPost = async (req, res, next) => {
 const updatePost = async (req, res, next) => {
     const postId = req.params.pid;
     const userId = req.userData.userId;
-    const {concertDetails, text} = req.body;
+    const {concertDetails, description} = req.body;
     let post;
 
     try {
-        post = await postsService.updatePost(userId, postId, concertDetails, text);
+        post = await postsService.updatePost(userId, postId, concertDetails, description);
     } catch (err) {
         const error = new HttpError(err.message, err.errorCode);
         return next(error);

@@ -45,6 +45,26 @@ const removeLike = async (req, res, next) => {
     })
 };
 
+const isPostLikedByUser = async(req, res, next) => {
+    const postId = req.params.pid;
+    const userId = req.userData.userId;
+    let liked = false;
+    let like;
+    try {
+        like = await likesService.isPostLikedByUser(postId, userId);
+        if(like !== null)
+            liked = true;
+    } catch (err) {
+        const error = new HttpError(err.message, err.errorCode);
+        return next(error);
+    }
+
+    await res.status(201).json({
+        liked, like
+    });
+};
+
 exports.getAllPostLikes = getAllPostLikes;
 exports.addLike = addLike;
 exports.removeLike = removeLike;
+exports.isPostLikedByUser = isPostLikedByUser;

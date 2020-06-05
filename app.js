@@ -2,16 +2,19 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
+const socketio = require('socket.io');
 
 const usersRoutes = require('./routes/users-routes');
 const profilesRoutes = require('./routes/profiles-routes');
 const postsRoutes = require('./routes/posts-routes');
 const likesRoutes = require('./routes/likes-routes');
+const mainSocket = require('./services/socketio-service');
 
 const HttpError = require('./models/http-error');
 const cloudinary = require('./services/cloudinary');
 
 const app = express();
+let expressServer;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -41,9 +44,17 @@ mongoose
     })
     .then(() => {
         console.log('good db connection');
-        app.listen(5000);
+        expressServer = app.listen(5000);
+        let io = socketio(expressServer);
+        io.on('connection', (socket) => {
+            mainSocket(io, socket);
+            // socket.on('disconnect', () => {
+            //     console.log('Socket disconnected');
+            // })
+        });
     })
     .catch(err => {
         console.log(err);
     });
+
 

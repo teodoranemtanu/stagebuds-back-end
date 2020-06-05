@@ -6,6 +6,10 @@ const getAllPostLikes = async (postId) => {
     return await Like.find({post: postId});
 };
 
+const isPostLikedByUser = async (postId, userId) =>{
+    return await Like.findOne({post: postId, author: userId});
+};
+
 const addLike = async (like) => {
     const newLike = new Like(like);
     await newLike.save();
@@ -21,3 +25,4 @@ const removeLike = async (postId, userId) => {
 exports.getAllPostLikes = getAllPostLikes;
 exports.addLike = addLike;
 exports.removeLike = removeLike;
+exports.isPostLikedByUser = isPostLikedByUser;
