@@ -1,14 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const path = require('path');
 const socketio = require('socket.io');
 
 const usersRoutes = require('./routes/users-routes');
 const profilesRoutes = require('./routes/profiles-routes');
 const postsRoutes = require('./routes/posts-routes');
 const likesRoutes = require('./routes/likes-routes');
-const mainSocket = require('./services/socketio-service');
+const conversationsRoutes = require('./routes/conversations-routes');
+const socketService = require('./services/socketio-service');
 
 const HttpError = require('./models/http-error');
 const cloudinary = require('./services/cloudinary');
@@ -18,7 +18,6 @@ let expressServer;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -33,6 +32,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/profiles', profilesRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/likes', likesRoutes);
+app.use('/api/conversations', conversationsRoutes);
 
 app.use((req, res, next) => {
     throw new HttpError('Could not find this route', 404);
@@ -46,12 +46,21 @@ mongoose
         console.log('good db connection');
         expressServer = app.listen(5000);
         let io = socketio(expressServer);
+
         io.on('connection', (socket) => {
-            mainSocket(io, socket);
-            // socket.on('disconnect', () => {
-            //     console.log('Socket disconnected');
-            // })
+            socketService.mainSocket(io, socket);
+            socket.on('disconnect', function() {
+                console.log('Sockets disconnected.');
+            });
         });
+
+        io.of('/messenger').on('connect', (socket) => {
+            socketService.messengerSocket(io, socket);
+            socket.on('disconnect', function() {
+                console.log('Sockets disconnected.');
+            });
+        });
+
     })
     .catch(err => {
         console.log(err);

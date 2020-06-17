@@ -4,14 +4,11 @@ const MODEL_PATH = '../models/' ;
 const Profile = require(MODEL_PATH + 'profile');
 const Post = require(MODEL_PATH + 'post');
 const User = require(MODEL_PATH + 'user');
-const Like = require(MODEL_PATH + '/like');
+const Like = require(MODEL_PATH + 'like');
 const HttpError = require("../models/http-error");
 
 const createPost = async (post) => {
     const createdPost = new Post(post);
-
-    console.log(createdPost);
-
     const session = await mongoose.startSession();
     session.startTransaction();
     createdPost.save();

@@ -55,7 +55,7 @@ const signup = async (req, res, next) => {
 
     let token;
     try {
-        token = usersService.createToken(createdUser.id, createdUser.email);
+        token = usersService.createToken(createdUser);
     } catch (err) {
         const error = new HttpError("Signing up failed, please try again later", 500);
         return next(error);

@@ -1,6 +1,6 @@
 const HttpError = require('../models/http-error');
 const postsService = require('../services/posts-service');
-const locationService = require('../services/location-service');
+const locationService = require('../services/locations-service');
 
 const getAllPosts = async (req, res, next) => {
     let posts;

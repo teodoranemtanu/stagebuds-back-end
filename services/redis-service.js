@@ -12,4 +12,4 @@ let initRedis = () => {
     });
 };
 
-module.exports = initRedis;
+exports.initRedis = initRedis;
