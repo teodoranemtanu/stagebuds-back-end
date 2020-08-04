@@ -79,11 +79,26 @@ const createPost = async (req, res, next) => {
 const updatePost = async (req, res, next) => {
     const postId = req.params.pid;
     const userId = req.userData.userId;
-    const {concertDetails, description} = req.body;
-    let post;
+    const {concertDetails, description, timestamp} = req.body;
+    let coordinates, post;
 
     try {
-        post = await postsService.updatePost(userId, postId, concertDetails, description);
+        coordinates = await locationService.getCoords(concertDetails.location);
+        console.log(coordinates);
+    } catch (error) {
+        return next(error);
+    }
+
+    const concertDetailsWithCoordinates = {
+        title: concertDetails.title,
+        band: concertDetails.band,
+        date: concertDetails.date,
+        location: concertDetails.location,
+        coordinates: coordinates
+    };
+
+    try {
+        post = await postsService.updatePost(userId, postId, concertDetailsWithCoordinates, description, timestamp);
     } catch (err) {
         const error = new HttpError(err.message, err.errorCode);
         return next(error);

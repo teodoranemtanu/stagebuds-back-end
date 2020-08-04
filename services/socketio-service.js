@@ -4,7 +4,7 @@ const notificationService = require('./notifications-service');
 const redisService = require('./redis-service');
 const conversationsService = require('./conversations-service');
 const messagesService = require('./messages-service');
-const dummyData = require('./dummy-data');
+const usersService = require('./users-service');
 
 const mainSocket = (io, socket) => {
     redisService.initRedis()
@@ -14,7 +14,7 @@ const mainSocket = (io, socket) => {
                 console.log(userId);
                 if (userId !== null) {
                     redisClient.hset('socketIds', userId, socket.id);
-                    console.log('socket connected');
+                    console.log('socket connected', socket.id);
                     const initialNotifications = await notificationService.getUserNotificationsByUser(userId);
                     socket.emit('getNotifications', initialNotifications);
                 } else {
@@ -28,19 +28,22 @@ const mainSocket = (io, socket) => {
         let notification;
         try {
             notification = await notificationService.addNotification(data.userId, data.postId);
-            // console.log(notification);
         } catch (err) {
             const error = new HttpError('Something went wrong with the notification', 505);
             console.log(error);
         }
         redisService.initRedis()
             .then(redisClient => {
+                console.log(notification.receiver);
+                redisClient.hgetall('socketIds', (err, result) => {
+                    console.log('send notif to', result[notification.receiver]);
+                });
                 redisClient.hgetall('socketIds', (err, result) => {
                     socket.to(result[notification.receiver]).emit('newNotification', notification);
                 })
+
             });
     });
-
 };
 
 const checkAuth = (token) => {
@@ -78,12 +81,31 @@ const messengerSocket = async (io, socket) => {
         socket.emit('getConversationData', messages);
     });
 
+    socket.on('newConversation', async (values) => {
+        const firstName = values.firstUserName.split(' ')[0];
+        const lastName = values.firstUserName.split(' ')[1];
+        const user1 = await usersService.findUserByName(firstName, lastName);
+        const user2 = values.secondUserId;
+        let newConversation;
+        try {
+            newConversation = await conversationsService.createConversation(user1._id, user2);
+            await newConversation
+                .populate('user2', {password: 0, email: 0, posts: 0})
+                .populate('user1', {password: 0, email: 0, posts: 0})
+                .execPopulate();
+        } catch (err) {
+            return new HttpError('Something went wrong creating conversation', 505);
+        }
+        console.log(newConversation);
+        socket.emit('getNewConversation', newConversation);
+    });
+
     socket.on('sendMessage', (message) => {
         redisService.initRedis()
             .then(redisClient => {
                 redisClient.hgetall('messSocketIds', async (err, result) => {
-                    // console.log(result[message.receiver]);
                     socket.to(result[message.receiver]).emit('newMessage', message);
+
                     const newMessage = await messagesService.createMessage(message);
                 })
             });

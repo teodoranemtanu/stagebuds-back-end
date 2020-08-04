@@ -33,6 +33,28 @@ const haveExistingConversation = async (user1, user2) => {
     }
 };
 
+const createConversation = async (user1, user2) => {
+    let existingConversation;
+    try {
+        existingConversation = await haveExistingConversation(user1, user2);
+    } catch (err) {
+        return new HttpError(err.message, err.errorCode);
+    }
+
+    if (existingConversation !== -1) {
+        return existingConversation;
+    }
+
+    let newConversation;
+    try {
+        newConversation = await addConversation({user1, user2});
+    } catch (err) {
+        return new HttpError(err.message, err.errorCode);
+    }
+    return newConversation;
+};
+
 exports.getConversationsOfUser = getConversationsOfUser;
 exports.haveExistingConversation = haveExistingConversation;
-exports.addConversation = addConversation;
+// exports.addConversation = addConversation;
+exports.createConversation = createConversation;

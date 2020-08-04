@@ -35,7 +35,7 @@ const getAllPostsByUser = async (userId) => {
   return posts;
 };
 
-const updatePost = async (userId, postId, concertDetails, text) => {
+const updatePost = async (userId, postId, concertDetails, text, timestamp) => {
     let post = await Post.findById(postId);
 
     if(post.author.toString() !== userId) {
@@ -43,7 +43,7 @@ const updatePost = async (userId, postId, concertDetails, text) => {
     }
 
     let updatedPost = await Post.findByIdAndUpdate(postId, {
-        concertDetails, text
+        concertDetails, text, timestamp
     }, {
         new: true
     });

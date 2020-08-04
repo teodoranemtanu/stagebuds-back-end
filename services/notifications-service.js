@@ -5,7 +5,7 @@ const Post = require('../models/post');
 const User = require('../models/user');
 
 const getUserNotificationsByUser = async (userId) => {
-    const notifications = await Notification.find({receiver: userId, read: false}).limit(10).sort({timestamp: -1});
+    const notifications = await Notification.find({receiver: userId}).limit(10).sort({timestamp: -1});
     return notifications;
 };
 
@@ -29,7 +29,11 @@ const addNotification = async (userId, postId) => {
 };
 
 const markNotificationRead = async (notificationId) => {
-    let notification = await Notification.findByIdAndUpdate(notificationId, {read: true});
+    let notification = await Notification.findByIdAndUpdate(notificationId, {read: true}, {
+        new: true
+    });
+    return notification;
 };
 exports.getUserNotificationsByUser = getUserNotificationsByUser;
 exports.addNotification = addNotification;
+exports.markNotificationRead = markNotificationRead;

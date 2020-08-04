@@ -9,7 +9,8 @@ const userSchema = new Schema({
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
     profilePicture: {type: String, required: false},
-    posts: [{type: mongoose.Types.ObjectId, required: false, ref: 'Post'}]
+    posts: [{type: mongoose.Types.ObjectId, required: false, ref: 'Post'}],
+    savedPosts: [{type: mongoose.Types.ObjectId, required: false, ref: 'Post'}]
 });
 
 userSchema.plugin(uniqueValidator);

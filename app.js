@@ -7,6 +7,8 @@ const usersRoutes = require('./routes/users-routes');
 const profilesRoutes = require('./routes/profiles-routes');
 const postsRoutes = require('./routes/posts-routes');
 const likesRoutes = require('./routes/likes-routes');
+const concertsRoutes = require('./routes/concerts-routes');
+const notificationsRoutes = require('./routes/notifications-routes');
 const conversationsRoutes = require('./routes/conversations-routes');
 const socketService = require('./services/socketio-service');
 
@@ -33,6 +35,8 @@ app.use('/api/profiles', profilesRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/likes', likesRoutes);
 app.use('/api/conversations', conversationsRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/songkick', concertsRoutes);
 
 app.use((req, res, next) => {
     throw new HttpError('Could not find this route', 404);
@@ -44,6 +48,7 @@ mongoose
     })
     .then(() => {
         console.log('good db connection');
+
         expressServer = app.listen(5000);
         let io = socketio(expressServer);
 

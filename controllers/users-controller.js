@@ -5,7 +5,6 @@ const profileService = require('../services/profiles-service');
 const {dataUri} = require("../middleware/multer");
 const cloudinary = require('cloudinary').v2;
 
-
 const getUsers = async (req, res, next) => {
     console.log('get');
     let users;
@@ -153,8 +152,92 @@ const uploadImage = async (req, res, next) => {
     })
 };
 
+const savePostToUser = async (req, res, next) => {
+    const postId = req.body.postId;
+    const userId = req.userData.userId;
+    let updatedUser;
+    try {
+        updatedUser = await usersService.savePost(userId, postId);
+    }catch (err) {
+        return next(new HttpError(err.message, err.statusCode))
+    }
+    res.status(201).json({
+        savedPosts: updatedUser.savedPosts
+    })
+};
+
+const unSavePostToUser = async (req, res, next) => {
+    const postId = req.body.postId;
+    const userId = req.userData.userId;
+    let updatedUser;
+    try {
+        updatedUser = await usersService.unSavePost(userId, postId);
+    }catch (err) {
+        return next(new HttpError(err.message, err.statusCode))
+    }
+    res.status(201).json({
+        savedPosts: updatedUser.savedPosts
+    })
+};
+
+const getUserSavedPosts = async (req, res, next) => {
+    const userId = req.userData.userId;
+    console.log('userid', userId);
+    let user;
+    try {
+        user = await usersService.findUserById(userId);
+    } catch (err) {
+        return next(new HttpError(err.message, err.statusCode))
+    }
+    console.log(user);
+    res.status(201).json({
+        savedPosts: user.savedPosts
+    });
+};
+
+const getUserSavedPostsData = async (req, res, next) => {
+    const userId = req.userData.userId;
+    console.log('userid', userId);
+    let user;
+    try {
+        user = await usersService.getUserSavedPostsWithData(userId);
+    } catch (err) {
+        return next(new HttpError(err.message, err.statusCode))
+    }
+    console.log(user.savedPosts);
+    res.status(201).json({
+        savedPosts: user.savedPosts
+    });
+};
+
+const findUsers = async (req, res, next) => {
+    const input = req.body;
+    const splitInput = input.value.split(' ');
+    let users = [];
+    if(splitInput.length === 1) {
+        let resultsByFirstName = await usersService.findUsersByFirstName(splitInput[0]);
+        let resultsByLastName = await usersService.findUsersByLastName(splitInput[0]);
+        users = [...users, ...resultsByFirstName, ...resultsByLastName];
+    } else {
+        let resultsByFirstName = await usersService.findUserByName(splitInput[0], splitInput[1]);
+        let resultsByLastName = await usersService.findUserByName(splitInput[1], splitInput[0]);
+        if(resultsByFirstName)
+            users = [...users, resultsByFirstName];
+        if(resultsByLastName)
+            users = [...users, resultsByLastName];
+    }
+    res.status(201).json({
+        searchResults: users
+    });
+};
+
 exports.getUsers = getUsers;
+exports.findUsers = findUsers;
+exports.savePostToUser = savePostToUser;
+exports.unSavePostToUser = unSavePostToUser;
 exports.signup = signup;
 exports.login = login;
 exports.uploadImage = uploadImage;
 exports.getUser = getUser;
+exports.getUserSavedPosts = getUserSavedPosts;
+exports.getUserSavedPostsData = getUserSavedPostsData;
