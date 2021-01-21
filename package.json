@@ -29,7 +29,7 @@
     "pug": "2.0.0-beta11",
     "redis": "^3.0.2",
     "setlistfm-js": "^1.2.0",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
